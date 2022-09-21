@@ -19,6 +19,10 @@ Install-Module -Name AzureAD
 Import-Module AzureAD
 Connect-AzureAD 
 
+#Get Users in a specific group
+# $ADUsers = Get-AzureADGroupMember -ObjectID <GroupObjectId> | Select-Object ObjectId, ObjectType, UserPrincipalName, UserType, @{Name="Date Retrieved";Expression={$RetrieveDate}}
+
+#Get all Users in AD
 $ADUsers = Get-AzureADUser -All $true | Select-Object ObjectId, ObjectType, UserPrincipalName, UserType, @{Name="Date Retrieved";Expression={$RetrieveDate}}
 
 $UserLicenseDetail = ForEach ($ADUser in $ADUsers)
@@ -30,8 +34,7 @@ $UserLicenseDetail = ForEach ($ADUser in $ADUsers)
         Select-Object ObjectID, @{Name="User Name";Expression={$UserName}},@{Name="UserPrincipalName";Expression={$UPN}} -ExpandProperty ServicePlans
     }
 
-#This can be found by running Get-AzureADUserLicenseDetail and find a Pro License and identify the ServicePlanID from there
-$PBIProServicePlanID = <insert your PBI Pro Service Plan ID>
+$PBIProServicePlanID = '70d33638-9c74-4d01-bfd3-562de28bd4ba'
 
 $ProUsersDetails = $UserLicenseDetail | Where-Object {$_.ServicePlanId -eq $PBIProServicePlanID}
 
